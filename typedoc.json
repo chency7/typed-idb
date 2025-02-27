@@ -1,0 +1,10 @@
+{
+  "entryPoints": ["src/**/*.ts"],
+  "tsconfig": "tsconfig.json",
+  "hideGenerator": true,
+  "includeVersion": true,
+  "excludeExternals": true,
+  "excludeInternal": true,
+  "out": "./docs/temp-markdown",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-plugin-frontmatter"]
+}

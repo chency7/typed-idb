@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+:root {
+  font-family: "Roboto", sans-serif !important;
+}
+
+// 兼容样式
+.vp-doc {
+  .tsd-page-toolbar {
+    background: var(--vp-c-bg-soft) !important;
+    border-bottom: 1px solid var(--vp-c-divider);
+    padding: 12px 24px;
+
+    .tsd-toolbar-contents {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+  }
+
+  .tsd-navigation {
+    padding: 16px;
+
+    &.primary {
+      border-right: 1px solid var(--vp-c-divider);
+      background: var(--vp-c-bg-soft);
+    }
+  }
+
+  // 暗黑模式适配
+  &.dark {
+    --td-text-color: var(--vp-c-text-1);
+    --td-border-color: var(--vp-c-divider-dark-1);
+
+    .tsd-page-toolbar {
+      background: var(--vp-c-bg-alt) !important;
+    }
+  }
+}
+
+// API 专用容器
+.api-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 32px;
+  padding: 24px;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+h1,
+h2,
+h3 {
+  color: #2c3e50;
+}
+
+a {
+  color: #3498db;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.navbar {
+  background-color: #34495e;
+  padding: 10px;
+}
+
+.sidebar {
+  background-color: #ecf0f1;
+  border-right: 1px solid #bdc3c7;
+}
+
+/* var.css */
+:root {
+  /* 首页标题样式 */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(
+    135deg,
+    #f6ceec 10%,
+    #d939cd 100%
+  );
+
+  /* 首页图标背景 */
+  --vp-home-hero-image-background-image: linear-gradient(
+    135deg,
+    #f6ceec 10%,
+    #d939cd 100%
+  );
+  --vp-home-hero-image-filter: blur(150px);
+
+  /* brand按钮 */
+  --vp-button-brand-border: #f6ceec;
+  --vp-button-brand-text: #f6ceec;
+  --vp-button-brand-bg: #d939cd;
+
+  --vp-button-brand-hover-border: #f6ceec;
+  --vp-button-brand-hover-text: #fff;
+  --vp-button-brand-hover-bg: #d939cd;
+
+  --vp-button-brand-active-border: #f6ceec;
+}
