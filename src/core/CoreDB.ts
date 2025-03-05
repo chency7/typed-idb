@@ -39,7 +39,7 @@ export class IndexedDBManager {
                 resolve(this.db);
             };
 
-            request.onerror = (event) => {
+            request.onerror = () => {
                 reject(new IndexedDBError('CONNECTION', '数据库连接失败'));
             };
         });

@@ -21,16 +21,18 @@ interface WithDBManager {
     };
 }
 
-export function transaction(storeNames: string | string[], mode: IDBTransactionMode = 'readwrite') {
-    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+export function transaction<T extends WithDBManager>(storeNames: string | string[], mode: IDBTransactionMode = 'readwrite') {
+    return function (target: object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<(...args: object[]) => Promise<object>>) {
         const originalMethod = descriptor.value;
+        if (!originalMethod) return descriptor;
 
-        descriptor.value = async function (this: { dbManager: any }, ...args: any[]) {
-            const dbManager = this.dbManager;
-            const transaction = dbManager.getTransaction(storeNames, mode);
+        descriptor.value = async function (this: T, ...args: Parameters<typeof originalMethod>) {
+            const transaction = this.dbManager.getTransaction(storeNames, mode);
             const result = await originalMethod.apply(this, [transaction, ...args]);
             return result;
         };
+
+        return descriptor;
     };
 }
 
