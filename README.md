@@ -1,6 +1,6 @@
 # typed-idb 🗄️
 
-> typed-idb 是一个现代化的 IndexedDB 操作库，专注于提供类型安全和开发体验。它通过完整的 TypeScript 类型支持和优雅的 API 设计，让浏览器数据库操作变得简单直观。结合 Web Worker 支持和内置的可视化分析工具，它不仅提供了强大的数据处理能力，还能帮助开发者更好地理解和优化数据库性能。
+> 一个类型安全的 IndexedDB 操作库，支持 Web Workers 和可视化分析。
 
 <p align="center">
   <img src="./logo.svg" width="200" height="200" alt="typed-idb logo">
