@@ -46,6 +46,26 @@ export class IndexedDBManager {
     }
 
     /**
+     * 处理数据库升级
+     * @param db - 数据库实例
+     * @param oldVersion - 旧版本号
+     * @param transaction - 事务对象
+     */
+    private handleUpgrade(
+        db: IDBDatabase,
+        oldVersion: number,
+        transaction: IDBTransaction
+    ): void {
+        this.options.migrations?.forEach(migration => {
+            if (migration.version > oldVersion) {
+                migration.upgrade(db, transaction);
+            }
+        });
+    }
+
+
+
+    /**
      * 获取事务
      * @param storeNames 存储名称
      * @param mode 事务模式

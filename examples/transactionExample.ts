@@ -13,7 +13,7 @@ class UserService {
         };
     }
 
-    @transaction(['users', 'logs'])
+    @transaction(['users', 'logs'], 'readwrite')
     async createUser(user: { id: number; name: string }) {
         // 在此方法中执行的所有数据库操作将自动在一个事务中进行。
         console.log(`Creating user: ${user.name}`);
