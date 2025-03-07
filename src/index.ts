@@ -1,6 +1,6 @@
 import { IndexedDBManager } from './core/CoreDB';
 import { Repository } from './repository/Repository';
-import { IDBOptions, DBSchema } from './types/index';
+import { IDBOptions, DBSchema, Recordable, RepositoryType } from './types/index';
 
 /**
  * 初始化数据库
@@ -22,12 +22,13 @@ export async function initDB(options: IDBOptions): Promise<IndexedDBManager> {
  * @returns Repository 实例
  */
 
-export function createRepository<T extends Record<string, any>>(
+export function createRepository<T extends Recordable<string>>(
     dbManager: IndexedDBManager,
     storeName: string
-): Repository<T> {
+): RepositoryType<T> {
     return new Repository<T>(dbManager, storeName);
 }
 
 
 export type { DBSchema, IDBOptions };
+

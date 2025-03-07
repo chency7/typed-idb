@@ -30,8 +30,35 @@ export interface IDBOptions {
 }
 
 /**
+ * 查询操作符定义
+ */
+export type QueryOperators<T> = {
+    $eq?: T;
+    $ne?: T;
+    $gt?: T;
+    $gte?: T;
+    $lt?: T;
+    $lte?: T;
+    $in?: T[];
+    $nin?: T[];
+};
+
+/**
  * 查询条件定义
  */
 export type QueryCondition<T> = {
-    [K in keyof T]?: T[K] | IDBKeyRange;
-}; 
+    [K in keyof T]?: T[K] | IDBKeyRange | QueryOperators<T[K]>;
+};
+
+
+
+export type Recordable<T = unknown> = Record<string, T>;
+
+
+export type RepositoryType<T extends Recordable<string>> = {
+    add(item: T): Promise<IDBValidKey>;
+    delete(key: IDBValidKey): Promise<void>;
+    get(key: IDBValidKey | IDBKeyRange): Promise<T | undefined>;
+    query(condition?: QueryCondition<T>, indexName?: string): Promise<T[]>;
+    update(key: IDBValidKey, updates: Partial<T>): Promise<void>;
+}

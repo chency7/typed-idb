@@ -1,3 +1,81 @@
 {
-  "terminal.integrated.defaultProfile.windows": "Windows PowerShell"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
+  "npm.packageManager": "pnpm",
+  "i18n-ally.localesPaths": ["src/locales/lang"],
+  "i18n-ally.enabledParsers": ["json"],
+  "i18n-ally.pathMatcher": "{locale}/{namespaces}.{ext}",
+  "i18n-ally.keystyle": "flat",
+  "i18n-ally.sortKeys": true,
+  "i18n-ally.sourceLanguage": "en_US",
+  "i18n-ally.displayLanguage": "zh_CN",
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.tokenColorCustomizations": {
+    "comments": "#5C6370",
+    "strings": "#98C379",
+    "numbers": "#D19A66",
+    "keywords": "#C678DD",
+    "types": "#E5C07B",
+    "functions": "#61AFEF",
+    "variables": "#E06C75",
+    "textMateRules": [
+      {
+        "scope": ["entity.name.type", "support.type"],
+        "settings": {
+          "foreground": "#E5C07B"
+        }
+      },
+      {
+        "scope": ["keyword.operator", "punctuation.separator"],
+        "settings": {
+          "foreground": "#56B6C2"
+        }
+      },
+      {
+        "scope": ["string.quoted", "string.template"],
+        "settings": {
+          "foreground": "#98C379"
+        }
+      }
+    ]
+  },
+  "workbench.colorCustomizations": {
+    // "editor.background": "#333",
+    "editor.foreground": "#ABB2BF",
+    "editor.lineHighlightBackground": "#2C313C",
+    "editor.selectionBackground": "#3E4451",
+    "editorCursor.foreground": "#528BFF",
+    "editorWhitespace.foreground": "#3B4048",
+    "titleBar.activeBackground": "#282C34",
+    "statusBar.background": "#21252B",
+    "sideBar.background": "#21252B",
+    "activityBar.background": "#282C34",
+    "tab.activeBackground": "#282C34",
+    "tab.inactiveBackground": "#21252B"
+  },
+  "workbench.iconTheme": "material-icon-theme",
+  "prettier.requireConfig": true,
+  "css.validate": false,
+  "tailwindCSS.validate": true,
+  "editor.fontFamily": "JetBrains Mono, Consolas, 'Courier New', monospace",
+  "editor.fontSize": 14,
+  "editor.fontLigatures": true,
+  "editor.cursorBlinking": "smooth",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.renderWhitespace": "none",
+  "editor.minimap.enabled": true,
+  "editor.rulers": [100]
 }

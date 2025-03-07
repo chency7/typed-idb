@@ -1,11 +1,11 @@
 import { IndexedDBError } from '../errors/errors';
 import { IndexedDBManager } from '../core/CoreDB';
-import { QueryCondition } from '../types/index';
+import { QueryCondition, Recordable } from '../types/index';
 
 /**
  * 存储操作类
  */
-export class Repository<T extends Record<string, any>> {
+export class Repository<T extends Recordable<string>> {
     /**
      * 构造函数，接受数据库管理实例和存储名称
      * @param dbManager 数据库管理实例
@@ -19,14 +19,29 @@ export class Repository<T extends Record<string, any>> {
      * @returns {Promise<IDBValidKey>} 添加操作的结果
      */
     async add(item: T): Promise<IDBValidKey> {
-        const transaction = this.dbManager.getTransaction(this.storeName, 'readwrite');
-        const store = transaction.objectStore(this.storeName);
-        const request = store.add(item);
+        try {
+            const transaction = this.dbManager.getTransaction(this.storeName, 'readwrite');
+            const store = transaction.objectStore(this.storeName);
+            const request = store.add(item);
 
-        return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(new IndexedDBError('QUERY', '添加数据失败'));
-        });
+            return new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = (event) => {
+                    const error = (event.target as IDBRequest).error;
+                    reject(new IndexedDBError('QUERY', '添加数据失败', error || undefined));
+                };
+                transaction.oncomplete = () => {
+                    // 事务成功完成但没有结果时
+                    if (!request.result) resolve(request.result);
+                };
+                transaction.onerror = (event) => {
+                    const error = transaction.error;
+                    reject(new IndexedDBError('TRANSACTION', '添加事务失败', error || undefined));
+                };
+            });
+        } catch (error) {
+            throw new IndexedDBError('QUERY', `添加数据时发生错误: ${(error as Error).message}`, error instanceof Error ? error : undefined);
+        }
     }
 
     /**
@@ -64,8 +79,26 @@ export class Repository<T extends Record<string, any>> {
                 if (cursor) {
                     const value = cursor.value;
                     if (condition) {
-                        const match = Object.keys(condition).every((key) => {
-                            return value[key] === condition[key] || condition[key] instanceof IDBKeyRange;
+                        const match = Object.entries(condition).every(([key, conditionValue]) => {
+                            if (conditionValue instanceof IDBKeyRange) {
+                                const fieldValue = value[key];
+                                return conditionValue.includes(fieldValue);
+                            } else if (typeof conditionValue === 'object' && conditionValue !== null) {
+                                const { $gt, $gte, $lt, $lte, $eq, $ne, $in, $nin } = conditionValue;
+                                const fieldValue = value[key];
+
+                                if ($eq !== undefined) return fieldValue === $eq;
+                                if ($ne !== undefined) return fieldValue !== $ne;
+                                if ($gt !== undefined && fieldValue <= $gt) return false;
+                                if ($gte !== undefined && fieldValue < $gte) return false;
+                                if ($lt !== undefined && fieldValue >= $lt) return false;
+                                if ($lte !== undefined && fieldValue > $lte) return false;
+                                if ($in !== undefined) return Array.isArray($in) && $in.includes(fieldValue);
+                                if ($nin !== undefined) return Array.isArray($nin) && !$nin.includes(fieldValue);
+
+                                return true;
+                            }
+                            return value[key] === conditionValue;
                         });
                         if (match) results.push(value);
                     } else {
@@ -88,14 +121,41 @@ export class Repository<T extends Record<string, any>> {
      * @returns {Promise<void>} 更新操作的结果
      */
     async update(key: IDBValidKey, updates: Partial<T>): Promise<void> {
-        const transaction = this.dbManager.getTransaction(this.storeName, 'readwrite');
-        const store = transaction.objectStore(this.storeName);
-        const request = store.put({ ...updates, key });
+        try {
+            const transaction = this.dbManager.getTransaction(this.storeName, 'readwrite');
+            const store = transaction.objectStore(this.storeName);
 
-        return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve();
-            request.onerror = () => reject(new IndexedDBError('QUERY', '更新数据失败'));
-        });
+            // 先获取原有数据
+            const existingData = await this.get(key);
+            if (!existingData) {
+                throw new IndexedDBError('QUERY', '要更新的数据不存在');
+            }
+
+            // 合并更新数据
+            const updatedData = { ...existingData, ...updates };
+            const request = store.put(updatedData);
+
+            return new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve();
+                request.onerror = (event) => {
+                    const error = (event.target as IDBRequest).error;
+                    reject(new IndexedDBError('QUERY', '更新数据失败', error || undefined));
+                };
+
+                // 添加事务完成和错误处理
+                transaction.oncomplete = () => {
+                    // 事务成功完成
+                    if (!request.result) resolve();
+                };
+
+                transaction.onerror = (event) => {
+                    const error = transaction.error;
+                    reject(new IndexedDBError('TRANSACTION', '更新事务失败', error || undefined));
+                };
+            });
+        } catch (error) {
+            throw new IndexedDBError('QUERY', `更新数据时发生错误: ${(error as Error).message}`, error instanceof Error ? error : undefined);
+        }
     }
 
     /**
@@ -104,15 +164,31 @@ export class Repository<T extends Record<string, any>> {
      * @returns {Promise<void>} 删除操作的结果
      */
     async delete(key: IDBValidKey): Promise<void> {
-        const transaction = this.dbManager.getTransaction(this.storeName, 'readwrite');
-        const store = transaction.objectStore(this.storeName);
-        const request = store.delete(key);
+        try {
+            const transaction = this.dbManager.getTransaction(this.storeName, 'readwrite');
+            const store = transaction.objectStore(this.storeName);
+            const request = store.delete(key);
 
-        return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve();
-            request.onerror = () => reject(new IndexedDBError('QUERY', '删除数据失败'));
-        });
+            return new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve();
+                request.onerror = (event) => {
+                    const error = (event.target as IDBRequest).error;
+                    reject(new IndexedDBError('QUERY', '删除数据失败', error || undefined));
+                };
+
+                transaction.oncomplete = () => {
+                    // 事务成功完成
+                    if (!request.result) resolve();
+                };
+
+                transaction.onerror = (event) => {
+                    const error = transaction.error;
+                    reject(new IndexedDBError('TRANSACTION', '删除事务失败', error || undefined));
+                };
+            });
+        } catch (error) {
+            throw new IndexedDBError('QUERY', `删除数据时发生错误: ${(error as Error).message}`, error instanceof Error ? error : undefined);
+        }
     }
 
-    // 其他方法...
-} 
+}
