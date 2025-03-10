@@ -9,7 +9,7 @@ coverage/
 # IDEs and editors
 .idea/
 *.iml
-.vscode/
+
 
 # Logs
 logs/

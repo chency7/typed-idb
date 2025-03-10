@@ -79,11 +79,11 @@ export type IndexedDBErrorType = 'CONNECTION' | 'TRANSACTION' | 'QUERY' | 'SCHEM
  */
 export class IndexedDBError extends Error {
     constructor(
-        public type: IndexedDBErrorType,
+        type: IndexedDBErrorType,
         message: string,
-        public originalError?: Error
+        originalError?: Error
     );
-    
+
     /**
      * 获取完整的错误信息，包括原始错误（如果有）
      */
@@ -99,13 +99,13 @@ export class IndexedDBManager {
      * @param options 数据库选项
      */
     constructor(options: IDBOptions);
-    
+
     /**
      * 连接到数据库并处理版本升级
      * @returns {Promise<IDBDatabase>} 数据库实例
      */
     connect(): Promise<IDBDatabase>;
-    
+
     /**
      * 获取事务
      * @param storeNames 存储名称
@@ -125,21 +125,21 @@ export class Repository<T extends Recordable<string>> {
      * @param storeName 存储名称
      */
     constructor(dbManager: IndexedDBManager, storeName: string);
-    
+
     /**
      * 添加数据到存储
      * @param item 要添加的数据项
      * @returns {Promise<IDBValidKey>} 添加操作的结果
      */
     add(item: T): Promise<IDBValidKey>;
-    
+
     /**
      * 获取存储中的数据
      * @param key 数据的键
      * @returns {Promise<T | undefined>} 获取的数据项
      */
     get(key: IDBValidKey | IDBKeyRange): Promise<T | undefined>;
-    
+
     /**
      * 根据条件查询数据
      * @param condition 查询条件
@@ -147,7 +147,7 @@ export class Repository<T extends Recordable<string>> {
      * @returns {Promise<T[]>} 查询结果
      */
     query(condition?: QueryCondition<T>, indexName?: string): Promise<T[]>;
-    
+
     /**
      * 更新存储中的数据
      * @param key 数据的键
@@ -155,7 +155,7 @@ export class Repository<T extends Recordable<string>> {
      * @returns {Promise<void>} 更新操作的结果
      */
     update(key: IDBValidKey, updates: Partial<T>): Promise<void>;
-    
+
     /**
      * 删除存储中的数据
      * @param key 数据的键
@@ -179,7 +179,7 @@ export interface WithDBManager {
  * @param mode - 事务模式，默认为 'readwrite'
  */
 export function transaction<T extends WithDBManager>(
-    storeNames: string | string[], 
+    storeNames: string | string[],
     mode?: IDBTransactionMode
 ): MethodDecorator;
 

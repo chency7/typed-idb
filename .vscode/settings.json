@@ -49,6 +49,24 @@
         "settings": {
           "foreground": "#98C379"
         }
+      },
+      {
+        "scope": ["meta.object-literal.key", "variable.object.property", "meta.definition.property", "variable.other.property", "support.type.property-name"],
+        "settings": {
+          "foreground": "#61AFEF"
+        }
+      },
+      {
+        "scope": ["keyword.control.import", "keyword.control.export"],
+        "settings": {
+          "foreground": "#C58FC0"
+        }
+      },
+      {
+        "scope": ["meta.interface.property"],
+        "settings": {
+          "foreground": "#61AFEF"
+        }
       }
     ]
   },
