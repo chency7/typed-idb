@@ -55,7 +55,7 @@ export type QueryCondition<T> = {
 export type Recordable<T = unknown> = Record<string, T>;
 
 
-export type RepositoryType<T extends Recordable<string>> = {
+export type RepositoryType<T extends Record<string, unknown>> = {
     add(item: T): Promise<IDBValidKey>;
     delete(key: IDBValidKey): Promise<void>;
     get(key: IDBValidKey | IDBKeyRange): Promise<T | undefined>;

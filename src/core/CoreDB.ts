@@ -2,10 +2,13 @@ import { IndexedDBError } from '../errors/errors';
 import { IDBOptions } from '../types/index';
 
 /**
- * IndexedDB管理类
+ * CoreDB
+ * 提供更直观的 IndexedDB 使用接口：connect/transaction/getObjectStore/close 等。
+ * 兼容旧的 IndexedDBManager 名称以减少迁移成本。
  */
-export class IndexedDBManager {
+export class CoreDB {
     private db: IDBDatabase | null = null;
+    private _activeTransaction: IDBTransaction | null = null;
 
     /**
      * 构造函数，接受数据库选项
@@ -84,4 +87,73 @@ export class IndexedDBManager {
         return this.db.transaction(storeNames, mode);
     }
 
+    /**
+     * 便捷事务方法
+     * 当传入单个存储名时，回调接收该存储的对象仓库；当传入多个存储名时，回调接收事务对象。
+     */
+    async transaction<T = unknown>(storeNames: string | string[], mode: IDBTransactionMode = 'readwrite', fn: (arg: IDBObjectStore | IDBTransaction) => Promise<T> | T): Promise<T> {
+        const tx = this.getTransaction(storeNames, mode);
+        return new Promise<T>((resolve, reject) => {
+            // 单仓库时传递 objectStore，多仓库时传递 transaction
+            let arg: IDBObjectStore | IDBTransaction;
+            try {
+                if (typeof storeNames === 'string') {
+                    arg = tx.objectStore(storeNames);
+                } else {
+                    arg = tx;
+                }
+
+                const result = Promise.resolve(fn(arg));
+                result.then((val) => {
+                    // 等待事务完成后再 resolve，确保写入落盘
+                    tx.oncomplete = () => resolve(val);
+                    tx.onerror = () => reject(new IndexedDBError('TRANSACTION', '事务执行失败', tx.error || undefined));
+                }).catch((err) => {
+                    // 主动中止事务并抛错
+                    try { tx.abort(); } catch { /* ignore */ }
+                    reject(new IndexedDBError('TRANSACTION', `事务回调执行出错: ${(err as Error).message}`, err instanceof Error ? err : undefined));
+                });
+            } catch (error) {
+                reject(new IndexedDBError('TRANSACTION', `创建事务失败: ${(error as Error).message}`, error instanceof Error ? error : undefined));
+            }
+        });
+    }
+
+    /**
+     * 获取对象存储（内部会创建 readonly 事务）。
+     * 如需写操作，请使用 transaction('store', 'readwrite', fn)。
+     */
+    getObjectStore(storeName: string, mode: IDBTransactionMode = 'readonly'): IDBObjectStore {
+        if (this._activeTransaction) {
+            return this._activeTransaction.objectStore(storeName);
+        }
+        const tx = this.getTransaction(storeName, mode);
+        return tx.objectStore(storeName);
+    }
+
+    /** 关闭数据库连接 */
+    close(): void {
+        if (this.db) {
+            try { this.db.close(); } catch { /* ignore */ }
+            this.db = null;
+        }
+    }
+
+    /** 是否已连接 */
+    isConnected(): boolean {
+        return !!this.db;
+    }
+
+    /** 设置当前活动事务，供装饰器在方法体中复用同一事务 */
+    setActiveTransaction(tx: IDBTransaction): void {
+        this._activeTransaction = tx;
+    }
+
+    /** 清除当前活动事务 */
+    clearActiveTransaction(): void {
+        this._activeTransaction = null;
+    }
 }
+
+// 兼容旧类名导出
+export { CoreDB as IndexedDBManager };

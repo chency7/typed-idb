@@ -10,8 +10,7 @@
     ".": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/esm/index.esm.js",
-      "require": "./dist/index.cjs.js",
-      "default": "./dist/index.esm.js"
+      "require": "./dist/cjs/index.cjs.js"
     }
   },
   "files": [
@@ -22,7 +21,6 @@
   ],
   "scripts": {
     "build": "rollup -c rollup.config.js",
-    "build:types": "tsc -p tsconfig.types.json",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "test:e2e": "playwright test",
@@ -82,9 +80,7 @@
     "vite": "^4.5.9",
     "vitepress": "^1.6.3"
   },
-  "peerDependencies": {
-    "react": ">=16.8.0"
-  },
+  "peerDependencies": {},
   "browserslist": {
     "production": [
       ">0.2%",

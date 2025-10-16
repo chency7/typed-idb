@@ -1,11 +1,11 @@
 import { IndexedDBError } from '../errors/errors';
 import { IndexedDBManager } from '../core/CoreDB';
-import { QueryCondition, Recordable } from '../types/index';
+import { QueryCondition } from '../types/index';
 
 /**
  * 存储操作类
  */
-export class Repository<T extends Recordable<string>> {
+export class Repository<T extends Record<string, unknown>> {
     /**
      * 构造函数，接受数据库管理实例和存储名称
      * @param dbManager 数据库管理实例
@@ -72,7 +72,20 @@ export class Repository<T extends Recordable<string>> {
         const results: T[] = [];
 
         return new Promise((resolve, reject) => {
-            const request = indexName ? store.index(indexName).openCursor() : store.openCursor();
+            // 优先使用 IDBKeyRange 打开游标，提升查询效率
+            let range: IDBKeyRange | undefined;
+            if (condition && indexName && condition[indexName as keyof T] instanceof IDBKeyRange) {
+                range = condition[indexName as keyof T] as unknown as IDBKeyRange;
+            } else if (condition) {
+                const keys = Object.keys(condition);
+                if (keys.length === 1) {
+                    const onlyKey = keys[0];
+                    const val = (condition as Record<string, unknown>)[onlyKey];
+                    if (val instanceof IDBKeyRange) range = val;
+                }
+            }
+
+            const request = indexName ? store.index(indexName).openCursor(range) : store.openCursor(range);
 
             request.onsuccess = (event) => {
                 const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;

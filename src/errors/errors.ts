@@ -21,10 +21,13 @@ export class IndexedDBError extends Error {
     ) {
         super(message);
         this.name = 'IndexedDBError';
-        
-        // 确保堆栈跟踪正确显示
-        if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, IndexedDBError);
+
+        const capture = (Error as any).captureStackTrace as ((targetObject: object, constructorOpt?: Function) => void) | undefined;
+        if (typeof capture === 'function') {
+            capture(this, IndexedDBError);
+        } else {
+            const err = new Error(message);
+            this.stack = err.stack;
         }
     }
 
