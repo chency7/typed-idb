@@ -66,7 +66,7 @@ export class CoreDB {
                     reject(new IndexedDBError('CONNECTION', `数据库连接失败: ${error?.message || '未知错误'}`));
                 };
 
-                request.onblocked = (event) => {
+                request.onblocked = () => {
                     reject(new IndexedDBError('CONNECTION', '数据库连接被阻塞，可能有其他标签页正在使用此数据库'));
                 };
             } catch (error) {

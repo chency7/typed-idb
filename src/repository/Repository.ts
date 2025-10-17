@@ -34,7 +34,7 @@ export class Repository<T extends Record<string, unknown>> {
                     // 事务成功完成但没有结果时
                     if (!request.result) resolve(request.result);
                 };
-                transaction.onerror = (event) => {
+                transaction.onerror = () => {
                     const error = transaction.error;
                     reject(new IndexedDBError('TRANSACTION', '添加事务失败', error || undefined));
                 };
@@ -161,7 +161,7 @@ export class Repository<T extends Record<string, unknown>> {
                     if (!request.result) resolve();
                 };
 
-                transaction.onerror = (event) => {
+                transaction.onerror = () => {
                     const error = transaction.error;
                     reject(new IndexedDBError('TRANSACTION', '更新事务失败', error || undefined));
                 };
@@ -194,7 +194,7 @@ export class Repository<T extends Record<string, unknown>> {
                     if (!request.result) resolve();
                 };
 
-                transaction.onerror = (event) => {
+                transaction.onerror = () => {
                     const error = transaction.error;
                     reject(new IndexedDBError('TRANSACTION', '删除事务失败', error || undefined));
                 };

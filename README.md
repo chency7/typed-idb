@@ -106,7 +106,7 @@ class UserService {
 }
 ```
 
-## 文档 📚
+<!-- ## 文档 📚
 
 详细文档请访问：[typed-idb 文档](https://github.com/chency7/typed-idb)
 
@@ -127,7 +127,7 @@ class UserService {
   - CJS：`const { CoreDB, initDB } = require('typed-idb')`
   - IndexedDB 是浏览器 API，推荐在浏览器环境使用
 
-更多 npm 参考实例说明见 `dist/README.md`。
+更多 npm 参考实例说明见 `dist/README.md`。 -->
 
 ## 许可证 📄
 
