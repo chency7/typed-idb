@@ -110,6 +110,25 @@ class UserService {
 
 详细文档请访问：[typed-idb 文档](https://github.com/chency7/typed-idb)
 
+## 发布与使用指引 🚀
+
+- 构建与校验
+  - `npm ci` 或 `pnpm install`
+  - `npm run build`（输出 `dist/esm`、`dist/cjs/index.cjs`、`dist/types`）
+  - `npm pack` 在本地验证 ESM/CJS/类型导入
+
+- 发布到 npm
+  - 非作用域包：`npm publish`
+  - 作用域包：`npm publish --access public`
+  - 可选：配置 `prepublishOnly` 执行测试与 lint
+
+- 使用方式
+  - ESM：`import { CoreDB, initDB, transaction, createRepository } from 'typed-idb'`
+  - CJS：`const { CoreDB, initDB } = require('typed-idb')`
+  - IndexedDB 是浏览器 API，推荐在浏览器环境使用
+
+更多 npm 参考实例说明见 `dist/README.md`。
+
 ## 许可证 📄
 
 MIT

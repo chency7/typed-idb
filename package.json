@@ -2,7 +2,7 @@
   "name": "typed-idb",
   "version": "1.0.2",
   "description": "类型安全的IndexedDB操作库，支持Web Workers和可视化分析",
-  "main": "./dist/cjs/index.cjs.js",
+  "main": "./dist/cjs/index.cjs",
   "module": "./dist/esm/index.esm.js",
   "types": "./dist/types/index.d.ts",
   "type": "module",
@@ -10,7 +10,7 @@
     ".": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/esm/index.esm.js",
-      "require": "./dist/cjs/index.cjs.js"
+      "require": "./dist/cjs/index.cjs"
     }
   },
   "files": [

@@ -1,6 +1,6 @@
-import { CoreDB, IndexedDBManager } from './core/CoreDB';
+import { CoreDB } from './core/CoreDB';
 import { Repository } from './repository/Repository';
-import { IDBOptions, DBSchema, Recordable, RepositoryType } from './types/index';
+import { IDBOptions, DBSchema, RepositoryType } from './types/index';
 export { transaction } from './decorators/transaction';
 
 /**
